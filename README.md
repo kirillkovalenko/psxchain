@@ -71,3 +71,19 @@ Check cards an address has:
 ```PowerShell
 .\Scripts\Get-DabcBalance.ps1 -Address '15JiUKBuUS5S1mXhdYY2jL37eZXa2S3ve6' | ? Quantity -eq 0
 ```
+
+### Work with active [DABC](https://droolingapebus.club) dispensers
+
+```PowerShell
+# cache data, it will take some time...
+.\Scripts\Get-DabcDispenser.ps1 | ConvertTo-Csv -NoTypeInformation | Out-File active-dabc-dispesers.csv
+# load cache
+$dabc = Get-Content .\active-dabc-dispesers.csv | ConvertFrom-Csv
+# query cheapest first
+$dabc | Sort-Object satoshirate | ft asset, satoshirate, give_remaining
+# query newest first
+$dabc | Sort-Object block_index -Descending | ft asset, satoshirate, give_remaining
+# query running out
+$dabc | Sort-Object { [int]$_.give_remaining } | ft asset, satoshirate, give_remaining
+# ... other query you insterested in
+```
